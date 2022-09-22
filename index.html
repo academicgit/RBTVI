@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <title>
+            R/B Tree Visualization | R/B Tree Animation 
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"> 
+        <meta name="description" content="Red/Black Tree Visualization online,Red/Black Tree Visualization simulator"/>
+        <meta name="Author"content="Parv Ashwani" />
+        <!-- css sheet for how the page is laid out -->
+
+        <link rel="stylesheet" href="visualizationPageStyle.css">
+
+
+        <!-- jqueury stuff.  Only used for the animation speed slider. -->
+        <link rel="stylesheet" href="ThirdParty/jquery-ui-1.8.11.custom.css">				
+        <script src="ThirdParty/jquery-1.5.2.min.js"></script>
+        <script src="ThirdParty/jquery-ui-1.8.11.custom.min.js"></script>
+
+        <!-- Javascript for the actual visualization code -->
+        <script type = "text/javascript" src = "AnimationLibrary/CustomEvents.js"></script>
+        <script type = "text/javascript" src = "AnimationLibrary/UndoFunctions.js"></script>
+        <script type = "text/javascript" src = "AnimationLibrary/AnimatedObject.js"></script>
+        <script type = "text/javascript" src = "AnimationLibrary/AnimatedLabel.js"></script>
+        <script type = "text/javascript" src = "AnimationLibrary/AnimatedCircle.js"></script>
+        <script type = "text/javascript" src = "AnimationLibrary/AnimatedRectangle.js"></script>
+        <script type = "text/javascript" src = "AnimationLibrary/AnimatedLinkedList.js"></script>
+        <script type = "text/javascript" src = "AnimationLibrary/HighlightCircle.js"></script>
+        <script type = "text/javascript" src = "AnimationLibrary/Line.js"></script>
+        <script type = "text/javascript" src = "AnimationLibrary/ObjectManager.js"></script>
+        <script type = "text/javascript" src = "AnimationLibrary/AnimationMain.js"></script>
+
+        <script type = "text/javascript" src = "AlgorithmLibrary/Algorithm.js"></script>
+        <script type = "text/javascript" src = "AlgorithmLibrary/RedBlack.js"></script> 
+
+
+    </head> 
+
+    <body onload="init();" class="VisualizationMainPage">
+
+        <div id = "container">
+
+            <div id="header">  
+                <h1>Red/Black Tree Visualization</h1>
+            </div>
+
+            <div id = "mainContent"> 
+
+                <div id = "algoControlSection">
+                    <!-- Table for buttons to control specific animation (insert/find/etc) -->
+                    <!-- (filled in by simulator code specific to the animtion) -->
+                    <table id="AlgorithmSpecificControls"> </table> 
+                </div>
+
+                <!-- Drawing canvas where all animation is done.  Note:  can be resized in code -->
+
+                <canvas id="canvas" width="1000" height="500"></canvas>
+
+                <div id = "generalAnimationControlSection">
+                    <!-- Table for buttons to control general animation (play/pause/undo/etc) ->
+                    <!-- (filled in by simulator code, specifically AnimationMain.js)  -->
+
+                    <table id="GeneralAnimationControls">  </table>		
+                </div>
+                 
+                <div id="theory">
+                    <table border="0" width="100%">
+                        <tbody>
+                           <tr>
+                           <td bgcolor="#cce6ff"><b><a href="https://avlvi.surge.sh" target="_blank"><font size="4">Check AVL Visualization By Parv Ashwani</font></a></b></td>
+                           </tr>
+                           <tr>
+                           <td bgcolor="#000"><hr></td>
+                           </tr>
+                            <tr>
+                           <td bgcolor="#000"><hr></td>
+                           </tr>
+                            <tr>
+                                <td bgcolor="#FF7F7F"><b><font size="4">Red-Black Tree</font></b></td>
+                            </tr>
+                            <tr>
+                                <td width="100%">A red-black tree (RB-tree) is a type of self-balancing BST. It is complex, but has a good worst-case running time for its operations and is efficient in practice: it can search, insert, and delete in <i>O</i>(log <i>n</i>) time, where <i>n</i> is the total number of elements in the tree.
+                                    <ul>
+                                        <li>In RB-trees, the leaf nodes are not relevant and do not contain data. A null child pointer can encode the fact that this child is a leaf.</li>
+                                        <li>Like BSTs, RB-trees allow efficient in-order traversals of elements.</li>
+                                        <li>The search time on a RB-tree results in <i>O</i>(log <i>n</i>) time.</li>
+                                    </ul>
+
+                                    <p><b>Properties</b>:</p>
+
+                                    <p>A RB-tree is a BST where each node has a color attribute, the value of which is either <i>red</i> or <i>black</i>. In addition to the ordinary requirements imposed on BSTs, the following additional requirements apply to RB-trees:</p>
+
+                                    <ol>
+                                        <li>A node is either red or black.</li>
+                                        <li>The root is black.</li>
+                                        <li>All leaves are black.</li>
+                                        <li>Both children of every red node are black.</li>
+                                        <li>Every simple path from a given node to any of its descendant leaves contains the same number of black nodes.</li>
+                                    </ol>
+
+                                    <p><img border="0" src="https://dichchankinh.com/~galles/visualization/Images/redblack/rb-tree.bmp" ></p>
+
+                                    <p>The above constraints enforce a critical property of RB-trees:</p>
+
+                                    <ul>
+                                        <li>The longest path from the root to any leaf is no more than twice as long as the shortest path from the root to any other leaf in that tree.</li>
+                                        <li>The result is that the tree is roughly balanced.</li>
+                                        <li>Insertion, deletion, and search require worst-case time proportional to the height of the tree, the theoretical upper bound on the height allows RB-trees to be efficient in the worst case.</li>
+                                    </ul>
+
+                                    <p>To see why these properties guarantee this, it suffices to note that no path can have two red nodes in a row, due to property 4. The shortest possible path has all black nodes, and the longest possible path alternates between red and black nodes. Since all maximal paths have the same number of black nodes, by property 5, this shows that no path is more than twice as long as any other path.</p>
+
+                                    <p>Insertions and removals are quite complex in a RB-tree in order to keep the properties.</p>
+
+                                    <p><b>Insertion</b>:</p>
+
+                                    <p>Insertion begins by adding the node as any BST insertion does and by coloring it red. It's a red inner node with two black leaves.</p>
+
+                                    <ul>
+                                        <li>Property 3 (all leaves are black) always holds.</li>
+                                        <li>Property 4 (both children of every red node are black) is threatened only by adding a red node, repainting a black node red, or a rotation.</li>
+                                        <li>Property 5 (all paths have same number of black nodes) is threatened only by adding a black node, repainting a red node black (or vice versa), or a rotation.</li>
+                                    </ul>
+
+                                    <p>In the following description, we have labels N (current node), P (N's parent), G (N's grandparent), and U (N's uncle).</p>
+
+                                    <ul>
+                                        <li>Case 1: N is root. It's repainted black to satisfy property 2.</li>
+                                        <li>Case 2: P is black. Property 4 (children of red are black) is not violated. Property 5 holds since N has two black leaf children, but N is red.</li>
+                                        <li>Case 3: if both P and U are red, repaint them black and repaint G red. Recursively insert G.</li>
+                                    </ul>
+
+                                    <p><img border="0" src="https://dichchankinh.com/~galles/visualization/Images/redblack/self%20b1.jpg"></p>
+
+                                    <ul>
+                                        <li>Case 4: P is red, but U is black; N is the right child of P, and P is the left child of G. Perform left rotation on P. Then go to Case 5.</li>
+                                    </ul>
+
+                                    <p><img border="0" src="https://dichchankinh.com/~galles/visualization/Images/redblack/self%20b2.jpg"></p>
+
+                                    <p>&nbsp;</p>
+
+                                    <ul>
+                                        <li>Case 5: right rotation. Repaint G and P.</li>
+                                    </ul>
+
+                                    <p><img border="0" src="https://dichchankinh.com/~galles/visualization/Images/redblack/self%20b3.jpg"></p>
+
+                                    <p>&nbsp;</p>
+
+                                    <p>For deletion on a RB-Tree, please see the Wikipedia link for details.</p>
+
+                                    <p>Let's try it out with the following sequence of values: 14, 17, 11, 7, 53, 4, 13, 12, and 8.</p>
+
+                                    <p>&nbsp;</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            <div id="footer">  
+                <p><a href="https://zarwin.is-a.dev">Algorithm Visualizations by Parv Ashwani</a></p>
+            </div>
+
+        </div><!-- container --> 
+    </body>
+</html>
